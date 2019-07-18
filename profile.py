@@ -13,3 +13,4 @@ node.routable_control_ip = "true"
 node.addService(pg.Execute(shell="sh", command="/local/repository/silly.sh"))
 
 # Print the RSpec to the enclosing page.
+pc.printRequestRSpec(request)
