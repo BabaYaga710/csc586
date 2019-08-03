@@ -29,7 +29,9 @@ for i in range(2):
   iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
   link.addInterface(iface)
   
+ldapserver.addService(rspec.Execute(shell="bash", command="ldaperver.sh"))  
+  
 # Print the RSpec to the enclosing page.
 pc.printRequestRSpec(request)
 
-"ldapserver".addService(rspec.Execute(shell="bash", command="/local/example.sh"))
+
