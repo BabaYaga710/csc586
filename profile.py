@@ -20,8 +20,7 @@ link = request.LAN("lan")
 for i in range(2):
   if i == 0:
     node = request.XenVM("ldapserver") 
-    node.addService(rspec.Install(url="https://github.com/BabaYaga710/csc586/blob/SSO/ldapserver.sh", path="/local"))
-    node.addService(rspec.Execute(shell="bash", command="ldaperver.sh"))  
+    node.addService(pg.Execute(shell="sh", command="/local/repository/ldapserver.sh"))
   else:
     node = request.XenVM("ldapclient")
    
