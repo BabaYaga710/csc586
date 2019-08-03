@@ -1,5 +1,5 @@
 import geni.portal as portal
-import geni.rspec.pg as rspec
+#import geni.rspec.pg as rspec
 import geni.rspec.pg as pg
 import geni.rspec.igext as IG
 
@@ -31,7 +31,7 @@ for i in range(2):
   link.addInterface(iface)
 
 #ldapserver.addService(pg.Execute(shell="sh", command="/local/repository/slapd.sh"))
-sudo apt-get install /local/repository/slapd.sh
+#sudo apt-get install /local/repository/slapd.sh
 
   
 # Print the RSpec to the enclosing page.
