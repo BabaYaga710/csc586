@@ -1,115 +1,61 @@
-#!/bin/bash 
-# make sure to run script as sudo 
+#!/bin/bash
 
+sudo apt-get install -qq libpam-ldap
 
-# LDAP 
-
-# update first 
-apt-get -q -y update 
-
-# install maven 
-
-apt-get install -y maven 
-
-# Install php dependencies 
-
-apt-get -y install php php-cgi libapache2-mod-php php-common php-pear php-mbstring 
-
-a2enconf php7.0-cgi 
-
-service apache2 restart 
-
-# Pre-seed the slapd passwords 
-
-export DEBIAN_FRONTEND='non-interactive'
-
-echo -e "slapd slapd/root_password password KappaRoss" |debconf-set-selections
-echo -e "slapd slapd/root_password_again password KappaRoss" |debconf-set-selections
-
-echo -e "slapd slapd/internal/adminpw password test" |debconf-set-selections
-echo -e "slapd slapd/internal/generated_adminpw password test" |debconf-set-selections
-echo -e "slapd slapd/password2 password test" |debconf-set-selections
-echo -e "slapd slapd/password1 password test" |debconf-set-selections
-echo -e "slapd slapd/domain string clemson.cloudlab.us" |debconf-set-selections
-echo -e "slapd shared/organization string clemson.cloudlab.us" |debconf-set-selections
-echo -e "slapd slapd/backend string MDB" |debconf-set-selections
-echo -e "slapd slapd/purge_database boolean false" |debconf-set-selections
-echo -e "slapd slapd/move_old_database boolean true" |debconf-set-selections
-echo -e "slapd slapd/dump_database_destdir string /var/backups/slapd-VERSION
-echo -e "slapd slapd/allow_ldap_v2 boolean false" |debconf-set-selections
-echo -e "slapd slapd/no_configuration boolean false" |debconf-set-selections
-
-# Grab slapd and ldap-utils (pre-seeded)
-apt-get install -y slapd ldap-utils phpldapadmin
-
-# Must reconfigure slapd for it to work properly 
-sudo dpkg-reconfigure slapd 
-
-# Gotta replace the ldap.conf file, it comments out stuff we need set by default - first open it for writing 
-
-chmod 777 /etc/ldap/ldap.conf 
-
-cat <<'EOF' > /etc/ldap/ldap.conf
-#
-# LDAP Defaults
-#
-
-# See ldap.conf(5) for details
-# This file should be world readable but not world writable.
-
-
-BASE    dc=clemson,dc=cloudlab,dc=us
-URI     ldap://192.168.1.1
-
-#SIZELIMIT      12
-#TIMELIMIT      15
-#DEREF          never
-
-# TLS certificates (needed for GnuTLS)
-TLS_CACERT      /etc/ssl/certs/ca-certificates.crt
-EOF
-
-# Be safe again 
-chmod 744 /etc/ldap/ldap.conf 
-
-
-# Now change all values in /etc/phpldapadmin/config.php to their actual values from example, or .com or localhost (I use sed)
-
-
-# Line 286 
-sed -i "s@$servers->setValue('server','name','LDAP Server');.*@$servers->setValue('server','name','LDAP');@" /etc/phpldapadmin/config.php
-# Line 293 
-sed -i "s@$servers->setValue('server','host','192.168.1.1');.*@$servers->setValue('server','host','192.168.1.1');@" /etc/phpldapadmin/config.php 
-# Line 300 
-sed -i "s@$servers->setValue('server','base',array('dc=clemson,dc=cloudlab,dc=us'));.*@$servers->setValue('server','base',array('dc=acu,dc=local'));@" /etc/phpldapadmin/config.php
-# Line 326 
-sed -i "s@$servers->setValue('login','bind_id','cn=admin,dc=clemson,dc=cloudlab,dc=us');.*@$servers->setValue('login','bind_id','cn=admin,dc=clemson,dc=cloudlab,dc=us');@" /etc/phpldapadmin/config.php
-
-# Prevent error when creating users 
-
-sed -i "s@$default = $this->getServer()->getValue('appearance','password_hash');.*@$default = $this->getServer()->getValue('appearance','password_hash_custom');@g" /usr/share/phpldapadmin/lib/TemplateRender.php
-
-service apache2 restart 
-
-echo ------------------------# 
-echo 'PHPldapadmin installed.'
-echo ------------------------# 
-
-echo ""
-
-echo ------------------------------------------------------------# 
-echo 'Can now access phpldapadmin at http://your-ip/phpldapadmin.'
-echo ------------------------------------------------------------# 
-
-echo ""
-
-echo ------------------------------------------------------------------------#
-echo 'Username should be acu.local, password is the adminpw set during setup.'
-echo ------------------------------------------------------------------------# S
-
-# Logging 
-
-echo -e 'Maven installed -done by' $USER 'at time\n' $DATE '\n' >> /var/log/installs/log.txt
-echo -e 'slapd and ldap-utils configured and installed -done by' $USER 'at time\n' $DATE '\n' >> /var/log/installs/log.txt
-echo -e 'phpldapadmin install configured -done by' $USER 'at time\n' $DATE '\n' >> /var/log/installs/log.txt
-echo -e 'LDAP installed completed by' $USER 'at time\n' $DATE '\n' >> /var/log/installs/log.txt
+rm /etc/libnss-ldap.conf
+wait 3
+touch /etc/libnss-ldap.conf
+echo "base dc=clemson,dc=cloudlab,dc=us" >> /etc/libnss-ldap.conf
+echo "uri ldap://192.168.1.1" >> /etc/libnss-ldap.conf
+echo "ldap_version 3" >> /etc/libnss-ldap.conf
+echo "rootbinddn cn=admin,dc=clemson,dc=cloudlab,dc=us" >> /etc/libnss-ldap.conf
+rm   /etc/pam_ldap.conf
+touch /etc/pam_ldap.conf
+echo "base dc=clemson,dc=cloudlab,dc=us" >> /etc/pam_ldap.conf
+echo "uri ldap://192.168.1.1" >> /etc/pam_ldap.conf
+echo "ldap_version 3" >> /etc/pam_ldap.conf
+echo "rootbinddn cn=admin,dc=clemson,dc=cloudlab,dc=us" >> /etc/pam_ldap.conf
+apt-get install libnss-ldap libpam-ldap nscd -y --force-yes
+dpkg-reconfigure libnss-ldap
+rm /etc/ldap/ldap.conf
+echo "BASE    dc=clemson,dc=cloudlab,dc=us" >> /etc/ldap/ldap.conf
+echo "URI     ldap://192.168.1.1" >> /etc/ldap/ldap.conf
+echo "TLS_CACERT      /etc/ssl/certs/ca-certificates.crt" >>  /etc/ldap/ldap.conf
+rm -r /etc/nsswitch.conf
+touch  /etc/nsswitch.conf
+echo "passwd: files ldap" >> /etc/nsswitch.conf
+echo "group: files ldap" >> /etc/nsswitch.conf
+echo "shadow: files ldap" >> /etc/nsswitch.conf
+echo "gshadow:        files" >> /etc/nsswitch.conf
+echo "hosts:          files dns" >> /etc/nsswitch.conf
+echo "networks:       files" >> /etc/nsswitch.conf
+echo "protocols:      db files" >> /etc/nsswitch.conf
+echo "services:       db files" >> /etc/nsswitch.conf
+echo "ethers:         db files" >> /etc/nsswitch.conf
+echo "rpc:            db files" >> /etc/nsswitch.conf
+echo "netgroup:       nis" >> /etc/nsswitch.conf
+rm /etc/pam.d/common-auth
+touch  /etc/pam.d/common-auth
+echo "auth    [success=2 default=ignore]      pam_unix.so nullok_secure" >> /etc/pam.d/common-auth
+echo "auth    [success=1 default=ignore]      pam_ldap.so use_first_pass" >> /etc/pam.d/common-auth
+echo "auth    requisite                       pam_deny.so" >> /etc/pam.d/common-auth
+echo "auth    required                        pam_permit.so" >> /etc/pam.d/common-auth
+rm /etc/pam.d/common-password
+touch /etc/pam.d/common-password
+echo "password        [success=2 default=ignore]      pam_unix.so obscure sha512" >> /etc/pam.d/common-password
+echo "password        [success=1 user_unknown=ignore default=die]     pam_ldap.so use_authtok try_first_pass" >> /etc/pam.d/common-password
+echo "password        requisite                       pam_deny.so" >> /etc/pam.d/common-password
+echo "password        required                        pam_permit.so" >> /etc/pam.d/common-password
+rm /etc/pam.d/common-session-noninteractive
+touch /etc/pam.d/common-session-noninteractive
+echo "session [default=1]                     pam_permit.so" >> /etc/pam.d/common-session-noninteractive
+echo "session requisite                       pam_deny.so" >> /etc/pam.d/common-session-noninteractive
+echo "session required                        pam_permit.so" >> /etc/pam.d/common-session-noninteractive
+echo "session required        pam_unix.so" >> /etc/pam.d/common-session-noninteractive
+echo "session optional                        pam_ldap.so" >> /etc/pam.d/common-session-noninteractive
+echo "session required	pam_mkhomedir.so skel=/etc/skel/ umask=0022"	>> /etc/pam.d/common-session
+echo "%main   ALL=(ALL:ALL) ALL" >> /etc/sudoers
+rm /etc/libnss-ldap.secret
+touch /etc/libnss-ldap.secret
+echo "password" >> /etc/libnss-ldap.secret
+service nscd restart
