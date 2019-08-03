@@ -17,15 +17,19 @@ set +x
   cat <<EOF | debconf-set-selections
 slapd slapd/password1 password password
 slapd slapd/password2 password password
-slapd slapd/dump_database_destdir string /var/backups/slapd-VERSION
-slapd slapd/domain string clemson.cloudlab.us
 slapd shared/organization string clemson.cloudlab.us
-slapd slapd/backend string MDB
-slapd slapd/purge_database boolean true
 slapd slapd/move_old_database boolean true
-slapd slapd/allow_ldap_v2 boolean false
-slapd slapd/no_configuration boolean false
+slapd slapd/dump_database_destdir string /var/backups/slapd-VERSION
+slapd slapd/upgrade_slapcat_failure error
+slapd slapd/invalid_config boolean true
+slapd slapd/backend select MDB
+slapd slapd/purge_database boolean false
+slapd slapd/ppolicy_schema_needs_update select abort installation
 slapd slapd/dump_database select when needed
+slapd slapd/no_configuration boolean false
+slapd slapd/unsafe_selfwrite_acl note
+slapd slapd/domain string clemson.cloudlab.us
+slapd slapd/allow_ldap_v2 boolean false
 EOF
 
 DEBIAN_FRONTEND=noninteractive apt-get install -y slapd ldap-utils
