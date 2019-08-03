@@ -30,11 +30,12 @@ echo -e "slapd slapd/internal/adminpw password test" |debconf-set-selections
 echo -e "slapd slapd/internal/generated_adminpw password test" |debconf-set-selections
 echo -e "slapd slapd/password2 password test" |debconf-set-selections
 echo -e "slapd slapd/password1 password test" |debconf-set-selections
-echo -e "slapd slapd/domain string acu.local" |debconf-set-selections
-echo -e "slapd shared/organization string IT410" |debconf-set-selections
-echo -e "slapd slapd/backend string HDB" |debconf-set-selections
-echo -e "slapd slapd/purge_database boolean true" |debconf-set-selections
+echo -e "slapd slapd/domain string clemson.cloudlab.us" |debconf-set-selections
+echo -e "slapd shared/organization string clemson.cloudlab.us" |debconf-set-selections
+echo -e "slapd slapd/backend string MDB" |debconf-set-selections
+echo -e "slapd slapd/purge_database boolean false" |debconf-set-selections
 echo -e "slapd slapd/move_old_database boolean true" |debconf-set-selections
+echo -e "slapd slapd/dump_database_destdir string /var/backups/slapd-VERSION
 echo -e "slapd slapd/allow_ldap_v2 boolean false" |debconf-set-selections
 echo -e "slapd slapd/no_configuration boolean false" |debconf-set-selections
 
@@ -58,7 +59,7 @@ cat <<'EOF' > /etc/ldap/ldap.conf
 
 
 BASE    dc=acu,dc=local
-URI     ldap://104.219.54.109 ldap://104.219.54.109:666
+URI     ldap://192.168.1.1
 
 #SIZELIMIT      12
 #TIMELIMIT      15
@@ -76,13 +77,13 @@ chmod 744 /etc/ldap/ldap.conf
 
 
 # Line 286 
-sed -i "s@$servers->setValue('server','name','My LDAP Server');.*@$servers->setValue('server','name','Nathans_LDAP');@" /etc/phpldapadmin/config.php
+sed -i "s@$servers->setValue('server','name','LDAP Server');.*@$servers->setValue('server','name','LDAP');@" /etc/phpldapadmin/config.php
 # Line 293 
-sed -i "s@$servers->setValue('server','host','127.0.0.1');.*@$servers->setValue('server','host','104.219.54.109');@" /etc/phpldapadmin/config.php 
+sed -i "s@$servers->setValue('server','host','192.168.1.1');.*@$servers->setValue('server','host','192.168.1.1');@" /etc/phpldapadmin/config.php 
 # Line 300 
-sed -i "s@$servers->setValue('server','base',array('dc=example,dc=com'));.*@$servers->setValue('server','base',array('dc=acu,dc=local'));@" /etc/phpldapadmin/config.php
+sed -i "s@$servers->setValue('server','base',array('dc=clemson,dc=cloudlab,dc=us'));.*@$servers->setValue('server','base',array('dc=acu,dc=local'));@" /etc/phpldapadmin/config.php
 # Line 326 
-sed -i "s@$servers->setValue('login','bind_id','cn=admin,dc=example,dc=com');.*@$servers->setValue('login','bind_id','cn=admin,dc=acu,dc=local');@" /etc/phpldapadmin/config.php
+sed -i "s@$servers->setValue('login','bind_id','cn=admin,dc=clemson,dc=cloudlab,dc=us');.*@$servers->setValue('login','bind_id','cn=admin,dc=clemson,dc=cloudlab,dc=us');@" /etc/phpldapadmin/config.php
 
 # Prevent error when creating users 
 
