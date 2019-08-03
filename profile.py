@@ -20,7 +20,7 @@ link = request.LAN("lan")
 for i in range(2):
   if i == 0:
     node = request.XenVM("ldapserver") 
-    node.addService(pg.Execute(shell="sh", command="/local/repository/ldapserver.sh"))
+    node.addService(pg.Execute(shell="sh", command="/local/repository/slapd.sh"))
   else:
     node = request.XenVM("ldapclient")
    
