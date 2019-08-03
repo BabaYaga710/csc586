@@ -58,7 +58,7 @@ cat <<'EOF' > /etc/ldap/ldap.conf
 # This file should be world readable but not world writable.
 
 
-BASE    dc=acu,dc=local
+BASE    dc=clemson,dc=cloudlab,dc=us
 URI     ldap://192.168.1.1
 
 #SIZELIMIT      12
