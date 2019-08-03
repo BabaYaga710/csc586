@@ -20,7 +20,6 @@ link = request.LAN("lan")
 for i in range(2):
   if i == 0:
     node = request.XenVM("ldapserver") 
-    sudo apt-get install /local/repository/slapd.sh
   else:
     node = request.XenVM("ldapclient")
    
@@ -31,8 +30,8 @@ for i in range(2):
   iface.addAddress(pg.IPv4Address(prefixForIP + str(i + 1), "255.255.255.0"))
   link.addInterface(iface)
 
-#node.addService(pg.Execute(shell="sh", command="/local/repository/slapd.sh"))
-#
+#ldapserver.addService(pg.Execute(shell="sh", command="/local/repository/slapd.sh"))
+sudo apt-get install /local/repository/slapd.sh
 
   
 # Print the RSpec to the enclosing page.
