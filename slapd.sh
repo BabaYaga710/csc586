@@ -51,7 +51,7 @@ cn: CSC586
 gidNumber: 5000
 EOF
 
-ldapadd -x -D cn=admin,dc=clemson,dc=cloudlab,dc=us -W -f basedn.ldif
+
 
   cat <<EOF > users.ldif
 dn: uid=student,ou=People,dc=clemson,dc=cloudlab,dc=us
@@ -70,6 +70,8 @@ gecos: Golden Ram
 loginShell: /bin/dash
 homeDirectory: /home/student
 EOF
+
+ldapadd -x -D cn=admin,dc=clemson,dc=cloudlab,dc=us -W -f basedn.ldif
 
 ldapadd -x -D cn=admin,dc=clemson,dc=cloudlab,dc=us -W -f users.ldif
 
