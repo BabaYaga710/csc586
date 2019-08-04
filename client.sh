@@ -29,8 +29,8 @@ echo "URI     ldap://192.168.1.1" >> /etc/ldap/ldap.conf
 echo "TLS_CACERT      /etc/ssl/certs/ca-certificates.crt" >>  /etc/ldap/ldap.conf
 rm -r /etc/nsswitch.conf
 touch  /etc/nsswitch.conf
-echo "passwd: files ldap" >> /etc/nsswitch.conf
-echo "group: files ldap" >> /etc/nsswitch.conf
+echo "passwd: compat system ldap" >> /etc/nsswitch.conf
+echo "group: compat system ldap" >> /etc/nsswitch.conf
 echo "shadow: files ldap" >> /etc/nsswitch.conf
 echo "gshadow:        files" >> /etc/nsswitch.conf
 echo "hosts:          files dns" >> /etc/nsswitch.conf
@@ -42,7 +42,7 @@ echo "rpc:            db files" >> /etc/nsswitch.conf
 echo "netgroup:       nis" >> /etc/nsswitch.conf
 rm /etc/pam.d/common-auth
 touch  /etc/pam.d/common-auth
-echo "auth    [success=2 default=ignore]      pam_unix.so nullok_secure" >> /etc/pam.d/common-auth
+echo "auth    [success=2 default=ignore]      pam_unix.so obscure sha512" >> /etc/pam.d/common-auth
 echo "auth    [success=1 default=ignore]      pam_ldap.so use_first_pass" >> /etc/pam.d/common-auth
 echo "auth    requisite                       pam_deny.so" >> /etc/pam.d/common-auth
 echo "auth    required                        pam_permit.so" >> /etc/pam.d/common-auth
@@ -59,9 +59,12 @@ echo "session requisite                       pam_deny.so" >> /etc/pam.d/common-
 echo "session required                        pam_permit.so" >> /etc/pam.d/common-session-noninteractive
 echo "session required        pam_unix.so" >> /etc/pam.d/common-session-noninteractive
 echo "session optional                        pam_ldap.so" >> /etc/pam.d/common-session-noninteractive
-echo "session required	pam_mkhomedir.so skel=/etc/skel/ umask=0022"	>> /etc/pam.d/common-session
+echo "session required	pam_mkhomedir.so skel=/etc/skel/ umask=0077"	>> /etc/pam.d/common-session
 echo "%main   ALL=(ALL:ALL) ALL" >> /etc/sudoers
 rm /etc/libnss-ldap.secret
 touch /etc/libnss-ldap.secret
 echo "password" >> /etc/libnss-ldap.secret
 service nscd restart
+
+sudo su - student
+echo "password"
