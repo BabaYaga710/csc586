@@ -1,5 +1,5 @@
 import geni.portal as portal
-#import geni.rspec.pg as rspec
+import geni.rspec.pg as rspec
 import geni.rspec.pg as pg
 import geni.rspec.igext as IG
 
@@ -20,8 +20,10 @@ link = request.LAN("lan")
 for i in range(2):
   if i == 0:
     node = request.XenVM("ldapserver") 
+    node.addService(pg.Execute(shell="sh", command="/local/repository/server.sh"))
   else:
     node = request.XenVM("ldapclient")
+    node.addService(pg.Execute(shell="sh", command="/local/repository/client.sh"))
    
   node.routable_control_ip = "true"  
   node.disk_image = "urn:publicid:IDN+emulab.net+image+emulab-ops:UBUNTU18-64-STD"
