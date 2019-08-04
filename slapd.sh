@@ -1,5 +1,9 @@
 #!/bin/bash
 
+sudo apt-get update -y
+sudo apt-get install -y apache2
+sudo systemctl restart apache2
+
 sudo apt-get install -qq libpam-ldap
 
 rm /etc/libnss-ldap.conf
