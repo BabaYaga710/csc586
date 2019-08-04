@@ -31,7 +31,7 @@ rm -r /etc/nsswitch.conf
 touch  /etc/nsswitch.conf
 echo "passwd: compat system ldap" >> /etc/nsswitch.conf
 echo "group: compat system ldap" >> /etc/nsswitch.conf
-echo "shadow: files ldap" >> /etc/nsswitch.conf
+echo "shadow: compat ldap" >> /etc/nsswitch.conf
 echo "gshadow:        files" >> /etc/nsswitch.conf
 echo "hosts:          files dns" >> /etc/nsswitch.conf
 echo "networks:       files" >> /etc/nsswitch.conf
