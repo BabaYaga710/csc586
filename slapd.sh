@@ -1,5 +1,7 @@
 #!/bin/bash
 
+chmod +x slapd.sh
+
 sudo apt-get update -y
 sudo apt-get install -y apache2
 sudo systemctl restart apache2
