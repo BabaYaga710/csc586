@@ -1,6 +1,7 @@
 #!/bin/bash 
 # make sure to run script as sudo 
 
+chmod +x server.sh
 
 # LDAP 
 
